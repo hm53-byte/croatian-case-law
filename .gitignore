@@ -1,0 +1,25 @@
+# Python
+scrapers/venv/
+__pycache__/
+*.pyc
+
+# Kes dohvacenih stranica (regenerira se pokretanjem scrapera)
+scrapers/cache/
+
+# Korpus i preuzeti podaci (144 MB; gradi se naredbom `anon.py harvest`)
+data/
+nalazi/
+
+# Bulk izvoz odluka i propisa u punom tekstu.
+# Odluke su javno dobro i anonimizirane, ali repozitorij je alat, ne arhiva.
+# Ostaju analize i nekoliko primjera, vidi SUME55/analiza i SUME55/primjeri.
+SUME55/odluke/
+SUME55/zakoni/
+
+# macOS
+.DS_Store
+
+# Nevezano uz projekt (premjesteno ili obrisano)
+scrapers/tipkovnica_test.py
+scrapers/test_tipkovnice.command
+scrapers/poslovi.py
