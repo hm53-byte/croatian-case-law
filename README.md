@@ -117,3 +117,13 @@ je alat, ne arhiva. U `SUME55/primjeri/` stoji nekoliko primjera izlaza.
 
 Razvijeno i testirano na macOS 13 (Intel). PyTorch je zaključan na 2.2.2 jer je
 to posljednja verzija s wheelovima za x86 macOS.
+
+## Prava korištenja
+
+Copyright (c) 2026 Hrvoje Matej. Sva prava pridržana.
+
+Kod je objavljen radi uvida i nije licenciran za korištenje. Bez izričitog
+pisanog dopuštenja autora nije dopušteno kopiranje, mijenjanje, distribucija ni
+korištenje u vlastitim projektima, komercijalnim ili nekomercijalnim.
+
+Za dogovor o korištenju: hrvoje.matej.l@gmail.com
