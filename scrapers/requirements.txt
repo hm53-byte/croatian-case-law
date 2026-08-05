@@ -1,0 +1,13 @@
+# Osnovno (scraping i korpus)
+requests>=2.31
+beautifulsoup4>=4.12
+lxml>=5.0
+
+# Pretvorba u PDF (cita PDF-ove pri provjeri izlaza)
+pypdf>=4.0
+
+# Semanticka pretraga (vektor.py). Zakljucano na 2.2.2 jer je to posljednji
+# PyTorch s wheelovima za x86 macOS; na drugim platformama slobodno digni.
+torch==2.2.2
+sentence-transformers>=2.7,<3
+numpy<2

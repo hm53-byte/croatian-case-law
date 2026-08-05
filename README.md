@@ -110,6 +110,16 @@ python3 -m venv venv
 
 Detalji sučelja portala i granica tražilice: `scrapers/README.md`.
 
+## Podaci i anonimizacija
+
+Odluke dolaze iz sustava **ANON**, gdje ih Ministarstvo pravosuđa objavljuje
+**u anonimiziranom obliku**: osobni podaci su zamijenjeni oznakama poput
+`[adresa]`, `[osobni identifikacijski broj]`, `[katastarska čestica]`. Imena
+stranaka svedena su na inicijale.
+
+Alat anonimizaciju ne uklanja, ne zaobilazi i ne dodaje; preuzima tekst točno
+kako je objavljen. Primjeri izlaza u `SUME55/primjeri/`.
+
 ## Odnos prema izvoru
 
 Jedna dretva, 1,5 s razmaka po hostu, keširanje da se isti URL ne traži dvaput,
