@@ -1,7 +1,13 @@
 # PRESUDE
 
-Alat za izgradnju lokalnog, pretraživog korpusa hrvatske sudske prakse, i
-primjer pravne analize provedene nad njim.
+**Pretvara hrvatsku sudsku praksu u lokalnu bazu koja se pretražuje i po
+značenju, a ne samo po riječima.** Preuzima odluke s portala
+[odluke.sudovi.hr](https://odluke.sudovi.hr), sprema ih u SQLite s punotekstnim
+i vektorskim indeksom, i nad tim korpusom provodi pravnu analizu.
+
+Priložen je i primjer takve analize: utvrđivanje da institut zamjene šuma iz
+čl. 55. Zakona o šumama **nema nijednu objavljenu presudu**, provjereno nad
+2437 preuzetih odluka. Postupak je u [`SUME55/analiza/`](SUME55/analiza/).
 
 Autor: Hrvoje Matej, hrvoje.matej.l@gmail.com
 
