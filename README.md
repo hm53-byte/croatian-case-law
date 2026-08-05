@@ -1,4 +1,19 @@
+![tests](https://github.com/hm53-byte/croatian-case-law/actions/workflows/tests.yml/badge.svg)
+
 # PRESUDE
+
+> **English summary.** This project turns Croatian case law into a local, searchable
+> corpus: it scrapes decisions from the state portal, stores them in SQLite with an
+> FTS5 full-text index plus embeddings, and runs legal analysis over them. It exists
+> because the old portal `sudskapraksa.csp.vsrh.hr` was shut down and replaced by the
+> **ANON** search system at odluke.sudovi.hr, which serves one browser query at a time
+> rather than systematic work. Three technical choices are worth a look: FTS5 with
+> `remove_diacritics 2`, so "sumsko zemljiste" still matches "šumsko zemljište";
+> chunking by the numbered points of a judgment's reasoning instead of by character
+> count; and a hybrid of BM25 and vector search merged through Reciprocal Rank Fusion.
+> The included analysis finds zero published judgments under art. 55 of the Forest
+> Act, verified against 2437 downloaded decisions. The rest of the documentation
+> that follows is in Croatian.
 
 **Pretvara hrvatsku sudsku praksu u lokalnu bazu koja se pretražuje i po
 značenju, a ne samo po riječima.** Preuzima odluke s portala
@@ -109,6 +124,14 @@ python3 -m venv venv
 ```
 
 Detalji sučelja portala i granica tražilice: `scrapers/README.md`.
+
+## Dokumentacija
+
+- [`docs/metodologija.md`](docs/metodologija.md) — segmentacija po strukturi
+  presude, vektorizacija i hibridni RRF, izlučivanje metapodataka, i postupak
+  dokazivanja da nečega u korpusu nema
+- [`docs/mjerenje.md`](docs/mjerenje.md) — brojke: preciznost naivne pretrage
+  52 posto, propusnost ugrađivanja, popunjenost metapodataka prije i poslije
 
 ## Podaci i anonimizacija
 

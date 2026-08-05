@@ -85,3 +85,30 @@ k. č. br. [katastarska čestica] k. o. [katastarska općina]
 ```
 
 Alat ne uklanja i ne dodaje anonimizaciju; preuzima tekst kakav je objavljen.
+
+## Uzorak korpusa: proba bez ijednog preuzimanja
+
+Puni korpus (2437 odluka, 144 MB) nije u repozitoriju, ali jest mali uzorak od
+25 odluka vezanih uz šume i zamjenu zemljišta: `data/uzorak.sqlite` (0,7 MB,
+odluke od 2006. do 2026.). Ima istu shemu i isti FTS5 indeks kao puni korpus,
+pa se pretraga može isprobati odmah nakon `git clone`, bez skidanja ijedne
+odluke s portala:
+
+```bash
+./venv/bin/python uzorak.py --trazi "sumsko zemljiste"
+```
+
+```
+5 pogodaka za 'sumsko zemljiste' u uzorak.sqlite
+
+#1  Visoki upravni sud Republike Hrvatske, Us-4946/2005-8 (2006-05-16)
+     ... pripada naknada za oduzeto poljoprivredno i građevinsko »zemljište«,
+     lugarnice, šume i »šumsko« »zemljište« po propisima o konfiskaciji ...
+```
+
+Uzorak se gradi iz punog korpusa i izbor je determiniran, pa isto pokretanje
+daje isti uzorak:
+
+```bash
+./venv/bin/python uzorak.py
+```

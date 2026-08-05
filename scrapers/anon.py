@@ -152,16 +152,19 @@ def doc(doc_id: str, *, cache: bool = True) -> dict:
     # Zadnja oznaka u modalu nema oznake iza sebe, pa bi regex nastavio gutati
     # sve do kraja stranice — a ondje je banner o kolačićima. Odrezati ga.
     plosnato = re.split(r"U svrhu pružanja boljeg korisničkog iskustva", plosnato)[0]
-    for oznaka in ("Broj odluke", "Sud", "Datum odluke", "Pravomoćnost",
-                   "Datum objave", "Upisnik", "Vrsta odluke", "ECLI broj",
-                   "Prethodne odluke", "Stvarno kazalo", "Europska pravna stečevina",
-                   "Propisi"):
-        m = re.search(re.escape(oznaka) + r"\s*:\s*(.{0,600}?)(?=(?:" +
-                      "|".join(re.escape(o) + r"\s*:" for o in
-                               ("Broj odluke", "Sud", "Datum odluke", "Pravomoćnost",
-                                "Datum objave", "Upisnik", "Vrsta odluke", "ECLI broj",
-                                "Prethodne odluke", "Stvarno kazalo",
-                                "Europska pravna stečevina", "Propisi")) + r")|$)", plosnato)
+    # Popis MORA sadrzavati sve oznake koje portal koristi. Ako jedna nedostaje,
+    # regex prethodne oznake guta njezin sadrzaj do sljedece poznate. Tako je
+    # "Vrsta odluke" dugo progutala cijelo "Zakonsko kazalo" i "EuroVoc".
+    OZNAKE = (
+        "Broj odluke", "Sud", "Datum odluke", "Pravomoćnost", "Datum objave",
+        "Upisnik", "Vrsta odluke", "ECLI broj", "Prethodne odluke",
+        "Naknadne odluke", "Zakonsko kazalo", "Stvarno kazalo", "EuroVoc",
+        "Europska pravna stečevina", "Propisi",
+    )
+    granica = "|".join(re.escape(o) + r"\s*:" for o in OZNAKE)
+    for oznaka in OZNAKE:
+        m = re.search(re.escape(oznaka) + r"\s*:\s*(.{0,1200}?)(?=(?:" + granica + r")|$)",
+                      plosnato)
         if m:
             meta[oznaka] = m.group(1).strip(" .;")
 
@@ -177,6 +180,8 @@ def doc(doc_id: str, *, cache: bool = True) -> dict:
         "ecli": meta.get("ECLI broj", ""),
         "pravomocnost": meta.get("Pravomoćnost", ""),
         "kazalo": meta.get("Stvarno kazalo", ""),
+        "zakonsko_kazalo": meta.get("Zakonsko kazalo", ""),
+        "eurovoc": meta.get("EuroVoc", ""),
         "propisi": meta.get("Propisi", ""),
         "tekst": tekst,
         "meta": meta,

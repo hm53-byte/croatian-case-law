@@ -7,7 +7,10 @@ __pycache__/
 scrapers/cache/
 
 # Korpus i preuzeti podaci (144 MB; gradi se naredbom `anon.py harvest`)
-data/
+data/*
+# ... osim malog uzorka (25 odluka, < 1 MB), koji ide u repozitorij
+# da pretraga radi odmah, bez skidanja ijedne odluke. Gradi ga scrapers/uzorak.py
+!data/uzorak.sqlite
 nalazi/
 
 # Bulk izvoz odluka i propisa u punom tekstu.
