@@ -26,3 +26,55 @@ SUME55/zakoni/
 scrapers/tipkovnica_test.py
 scrapers/test_tipkovnice.command
 scrapers/poslovi.py
+
+# Stvarni pravni predmet, osobni podaci: NIKADA ne objavljivati.
+SPIS_VELI_LOSINJ/
+spis/
+*losinj*
+*Losinj*
+
+# Sustavno nabrajanje portala. robots.txt portala glasi "Disallow: /", pa se ovi
+# moduli ne pokrecu bez pisanog dopustenja izvora i ne objavljuju se. Razlog nije
+# samo pravni: sadrze ritam dohvata, broj veza, pragove particioniranja i URL
+# obrasce nabrajanja, dakle parametre prema tudem posluzitelju, a ne domensko
+# znanje. Metoda je opisana u README-u i docs/mjerenje.md, brojke ostaju vani.
+scrapers/crawler.py
+scrapers/lov.py
+scrapers/zk.py
+scrapers/uzorkovanje.py
+tests/test_crawler.py
+
+# Isti razlog: propusnost, particioniranje i ritam dohvata u punom obliku.
+docs/arhitektura-korpusa.md
+
+# ----------------------------------------------------------------- DOKTRINA --
+# Puni tekstovi clanaka s Hrcka. Nista od ovoga ne izlazi s ovog racunala.
+#
+# Licenca se na Hrcku razlikuje po casopisu: dio korpusa je CC BY-NC-ND (dakle
+# uvjetno siriv, uz imenovanje i bez prerade), dio nosi prozu koja dopusta samo
+# osobnu uporabu. Modul svaki zapis oznaci, ali oznaka nije zastita: zastita je
+# to da datoteka uopce ne moze uci u git. Zato su pravila izricita, a ne samo
+# posljedica sireg pravila `data/*` iznad. Ako se `data/*` ikad razlabavi ili
+# se baza premjesti, ovo i dalje drzi.
+data/doktrina.sqlite
+data/doktrina.sqlite-wal
+data/doktrina.sqlite-shm
+doktrina.sqlite
+*doktrina*.sqlite
+*doktrina*.sqlite-wal
+*doktrina*.sqlite-shm
+
+# Glavni korpus otkad u njega ulazi i doktrina. Sadrzi 174 clanka u punom
+# tekstu, od toga 2 koja se smiju drzati samo lokalno, pa vrijedi isto.
+corpus.sqlite
+*corpus*.sqlite
+*corpus*.sqlite-wal
+*corpus*.sqlite-shm
+*corpus*.sqlite.*.bak
+
+# Sirovi OAI odgovori snimljeni tijekom izvidnice. Nisu ulaz ni u jedan modul
+# (moduli dohvacaju preko common.get i vlastitog kesa), nego trag ispitivanja.
+# sets.xml je popis od 581 casopisa, oai.xml je stranica preusmjerenja 301.
+scrapers/sets.xml
+scrapers/oai.xml
+scrapers/id.xml

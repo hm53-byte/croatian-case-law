@@ -33,6 +33,7 @@ usud.hr ──────────┘                  data/corpus.sqlite
 | `zakoni.py` | Skida propise u `SUME55/zakoni/` |
 | `analiza_cl55.py` | Domenski klasifikator za čl. 55. Zakona o šumama |
 | `vektor.py` | **Vektorska + hibridna pretraga** (embeddingi, BM25, RRF fuzija) |
+| `crawler.py` | Enumerator particija (sud x godina) za mjerilo punog korpusa; napredak u tablici `zadaci`, nastavak nakon prekida, provjera `robots.txt` |
 | `semantic_search.py` | Stari stub — zamijenjen `vektor.py`, ostavljen radi povijesti |
 
 ## Zašto `anon.py`, a ne stari portal
@@ -95,9 +96,13 @@ je zadani način rada **hibrid**.
 
 ```bash
 ./venv/bin/python vektor.py index                  # inkrementalno, preskače indeksirano
+./venv/bin/python vektor.py index-skup ID1 ID2     # SAMO te odluke (zlatni skup)
+./venv/bin/python vektor.py index-skup --iz-datoteke zlatni.txt --ponovno
 ./venv/bin/python vektor.py query "zamjena škart zemljišta za građevinsko" -k 8
 ./venv/bin/python vektor.py query "..." --nacin vektor   # samo semantički
 ./venv/bin/python vektor.py query "..." --nacin bm25     # samo doslovno
+./venv/bin/python vektor.py query "..." --upit "drugi kut" --hyde "ulomak..."
+./venv/bin/python vektor.py query "..." --objasni        # iz kojeg upita je pogodak
 ./venv/bin/python vektor.py stat
 ```
 
@@ -115,6 +120,15 @@ je zadani način rada **hibrid**.
    spajaju **RRF-om** (`1/(60+rang)`). RRF ne traži da rezultati budu na istoj
    skali, pa ne treba normalizacija koja bi unijela proizvoljne pragove.
 4. **Inkrementalno.** Već indeksirane odluke se preskaču, kao i kod harvesta.
+   `index-skup` gleda samo zadane id-eve, pa se zlatni skup i kandidati jednog
+   instituta indeksiraju u minutama umjesto da se čeka cijeli korpus.
+5. **Snop upita.** `pretrazi()` prima više upita odjednom i spaja ih istim
+   RRF-om kojim spaja grane, pa je jedan upit samo poseban slučaj snopa.
+   `Upit(tekst, prefiks="passage")` ugrađuje proizvoljan tekst kao
+   pseudodokument (HyDE) i ide isključivo u vektorsku granu: ulomak je
+   izmišljen, pa bi pogrešan broj članka u BM25 bio lažni pogodak s visokim
+   rangom. Svaki `Pogodak` nosi `podrijetlo` (koji upit, koja grana, koji
+   rang), a `objasni()` to vraća u obliku spremnom za mjerne tablice.
 
 **Napomena o hardveru:** ovo je Intel Mac bez GPU-a; zadnji PyTorch s x86 macOS
 wheelovima je **2.2.2**, zato je verzija u instalaciji zaključana. Nema MPS-a —
@@ -123,26 +137,32 @@ sve ide na CPU. Indeksiranje je jednokratan trošak, pretraga je poslije trenutn
 **Što vektorizacija ne rješava:** ne stvara presude kojih u bazi nema. Ako je
 tema slabo zastupljena, prvo treba proširiti korpus harvestom, pa indeksirati.
 
-## Noćno automatsko preuzimanje (kao IUS-INFO)
+## Način uporabe: ad hoc, ne trajni crawl
 
-ANON se ažurira dnevno, pa ima smisla vrtjeti harvest noću. LaunchAgent
-`~/Library/LaunchAgents/hr.presude.harvest.plist` koji svaki dan u 03:00
-osvježava teme koje te zanimaju:
+Alat je namijenjen **pojedinačnim, ručno pokrenutim upitima**, a ne neprekidnom
+prikupljanju. Nema rasporeda, nema pozadinske službe, nema LaunchAgenta.
 
-```xml
-<key>ProgramArguments</key>
-<array>
-  <string>/Users/hrvojematej/Desktop/PRESUDE/scrapers/venv/bin/python</string>
-  <string>/Users/hrvojematej/Desktop/PRESUDE/scrapers/anon.py</string>
-  <string>harvest</string>
-  <string>"zamjena šuma i šumskih zemljišta"</string>
-  <string>--max</string><string>200</string>
-</array>
-<key>StartCalendarInterval</key><dict><key>Hour</key><integer>3</integer></dict>
+Razlog nije samo pristojnost. `robots.txt` portala glasi:
+
+```
+User-agent: *
+Allow: /$
+Allow: /Home/Privacy, /Home/About, /Home/Cookies,
+       /Home/Accessibility, /Home/UserManual
+Disallow: /
 ```
 
-Budući da `store.py` preskače već preuzete odluke, svaka iduća noć skida samo
-ono što je novo.
+Rute `/Document/DisplayList` i `/Document/View` potpadaju pod `Disallow: /`.
+Ciljani upit za nekoliko odluka i sustavno nabrajanje cijele baze nisu ista
+stvar ni po opsegu ni po učinku, ali granica je ista i treba je znati.
+
+`crawler.py` zato ima tvrdu zapreku: bez izričitog dopuštenja odbija se pokrenuti
+i vraća izlazni kod 3 prije prvog zahtjeva. Za sustavno preuzimanje treba
+dogovor s Ministarstvom pravosuđa, uprave i digitalne transformacije, koje za
+sustav ANON ima servise za kontroliranu razmjenu podataka.
+
+Preporučeni redoslijed: pretraga postojećeg lokalnog korpusa (`lov.py`, `store.py`,
+`vektor.py`) bez ijednog mrežnog zahtjeva, pa tek po potrebi ciljana dopuna.
 
 ## Pristojnost prema izvoru
 

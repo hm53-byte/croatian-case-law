@@ -70,18 +70,12 @@ def _tekst(el) -> str:
 
 # ---------------------------------------------------------------- pretraga --
 
-def search(upit: str, *, page: int = 1, sk: str = "", zk: str = "",
-           samo_pravomocne: bool = False, cache: bool = True) -> dict:
-    """Jedna stranica rezultata. Vraća {'ukupno': int, 'rezultati': [...]}."""
-    params = {"q": upit, "page": page}
-    if sk:
-        params["sk"] = sk
-    if zk:
-        params["zk"] = zk
-    if samo_pravomocne:
-        params["prm"] = "pravomocna"
+def raspakiraj(html: str) -> dict:
+    """Parsira stranicu /Document/DisplayList u {'ukupno', 'rezultati'}.
 
-    html = get(SEARCH_URL, params=params, cache=cache)
+    Odvojeno od mreže namjerno: isti parser koristi i crawler.py, koji
+    stranice dohvaća vlastitim klijentom (bez keša, s vlastitim tempom).
+    """
     s = soup(html)
 
     ukupno = 0
@@ -109,6 +103,20 @@ def search(upit: str, *, page: int = 1, sk: str = "", zk: str = "",
             "isjecak": _tekst(a.select_one(".result-snippet")),
         })
     return {"ukupno": ukupno, "rezultati": rezultati}
+
+
+def search(upit: str, *, page: int = 1, sk: str = "", zk: str = "",
+           samo_pravomocne: bool = False, cache: bool = True) -> dict:
+    """Jedna stranica rezultata. Vraća {'ukupno': int, 'rezultati': [...]}."""
+    params = {"q": upit, "page": page}
+    if sk:
+        params["sk"] = sk
+    if zk:
+        params["zk"] = zk
+    if samo_pravomocne:
+        params["prm"] = "pravomocna"
+
+    return raspakiraj(get(SEARCH_URL, params=params, cache=cache))
 
 
 def search_all(upit: str, *, max_rezultata: int = 100, **kw):

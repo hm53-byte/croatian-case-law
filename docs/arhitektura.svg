@@ -1,0 +1,193 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1220 440" width="1220" height="440" role="img" aria-labelledby="naslov opis">
+  <title id="naslov">Arhitektura: od portala do izmjerenog rezultata</title>
+  <desc id="opis">Pet stupaca. Izvori, dohvat, pohrana u SQLite s FTS5 indeksom i čancima, hibridni dohvat u kojem BM25 i vektorska grana teku usporedno pa se spajaju RRF-om, i mjerenje u kojem svaka brojka ima osnovicu pored sebe. Crawler je označen kao zabranjen datotekom robots.txt i nije u repozitoriju.</desc>
+
+  <style>
+    :root { color-scheme: light dark; }
+    text   { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    .mono  { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .bg    { fill: #ffffff; }
+    .ttl   { fill: #14161a; font-size: 17px; font-weight: 700; }
+    .sub   { fill: #5b6270; font-size: 11.5px; }
+    .hdr   { fill: #5b6270; font-size: 11px; font-weight: 700; letter-spacing: .09em; }
+    .box   { fill: #f7f8fa; stroke: #c9ced8; stroke-width: 1; }
+    .boxi  { fill: #ffffff; stroke: #d7dce4; stroke-width: 1; }
+    .bt    { fill: #14161a; font-size: 12px; font-weight: 650; }
+    .bl    { fill: #5b6270; font-size: 10px; }
+    .num   { fill: #14161a; font-size: 10px; font-weight: 700; }
+    .tag   { fill: #5b6270; font-size: 9px; font-weight: 700; letter-spacing: .06em; }
+    .arw   { stroke: #98a0ae; stroke-width: 1.6; fill: none; }
+    .arwi  { stroke: #b6bcc7; stroke-width: 1.3; fill: none; }
+    .accb  { fill: #eef4fb; stroke: #7fa9d8; stroke-width: 1; }
+    .acct  { fill: #1a4f8f; font-size: 12px; font-weight: 650; }
+    .okb   { fill: #f0f8f3; stroke: #7cba9a; stroke-width: 1; }
+    .okt   { fill: #12603a; font-size: 12px; font-weight: 650; }
+    .wrnb  { fill: #fdf3f1; stroke: #d08c7c; stroke-width: 1.4; stroke-dasharray: 5 3; }
+    .wrnt  { fill: #97372a; font-size: 12px; font-weight: 700; }
+    .wrnl  { fill: #97372a; font-size: 10px; }
+    .foot  { fill: #5b6270; font-size: 10.5px; }
+    .rule  { stroke: #e2e6ec; stroke-width: 1; }
+
+    @media (prefers-color-scheme: dark) {
+      .bg   { fill: #0f1115; }
+      .ttl  { fill: #e8eaed; }
+      .sub, .hdr, .bl, .foot, .tag { fill: #9aa3b2; }
+      .box  { fill: #171a21; stroke: #39404e; }
+      .boxi { fill: #12151b; stroke: #333a47; }
+      .bt   { fill: #e8eaed; }
+      .num  { fill: #e8eaed; }
+      .arw  { stroke: #5c6472; }
+      .arwi { stroke: #4a5261; }
+      .accb { fill: #13202f; stroke: #3b6d9e; }
+      .acct { fill: #79b0e8; }
+      .okb  { fill: #12211a; stroke: #34694f; }
+      .okt  { fill: #5fc48c; }
+      .wrnb { fill: #241512; stroke: #8f4c3d; }
+      .wrnt { fill: #e79582; }
+      .wrnl { fill: #d4897a; }
+      .rule { stroke: #2a303a; }
+    }
+  </style>
+
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,1 L9,5 L0,9 z" fill="#98a0ae"/>
+    </marker>
+    <marker id="ai" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,1 L9,5 L0,9 z" fill="#b6bcc7"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1220" height="440"/>
+
+  <text class="ttl" x="24" y="34">croatian-case-law: od portala do izmjerenog rezultata</text>
+  <text class="sub" x="24" y="54">Jezični model se troši po problemu, nikad po dokumentu. Nijedna brojka ne stoji bez osnovice pored sebe.</text>
+  <line class="rule" x1="24" y1="68" x2="1196" y2="68"/>
+
+  <!-- ================= 1. IZVORI ================= -->
+  <text class="hdr" x="24" y="92">1. IZVORI</text>
+
+  <rect class="box" x="24" y="106" width="176" height="66" rx="6"/>
+  <text class="bt" x="36" y="126">odluke.sudovi.hr</text>
+  <text class="bl" x="36" y="142">sustav ANON, Ministarstvo</text>
+  <text class="bl" x="36" y="156">1.173.225 odluka, javno,</text>
+  <text class="bl" x="36" y="168">objavljene anonimizirano</text>
+
+  <rect class="box" x="24" y="186" width="176" height="52" rx="6"/>
+  <text class="bt" x="36" y="206">narodne-novine.hr</text>
+  <text class="bl" x="36" y="224">propisi u punom tekstu</text>
+
+  <rect class="box" x="24" y="252" width="176" height="52" rx="6"/>
+  <text class="bt" x="36" y="272">usud.hr</text>
+  <text class="bl" x="36" y="290">odluke Ustavnog suda</text>
+
+  <!-- ================= 2. DOHVAT ================= -->
+  <text class="hdr" x="234" y="92">2. DOHVAT</text>
+
+  <rect class="box" x="234" y="106" width="210" height="66" rx="6"/>
+  <text class="bt" x="246" y="126">common.py</text>
+  <text class="bl" x="246" y="142">HTTP sloj: diskovni keš, retry</text>
+  <text class="bl" x="246" y="156">s eksponencijalnim backoffom,</text>
+  <text class="bl" x="246" y="168">jedna dretva, razmak po hostu</text>
+
+  <rect class="box" x="234" y="186" width="210" height="82" rx="6"/>
+  <text class="bt" x="246" y="206">anon.py, zakoni.py,</text>
+  <text class="bt" x="246" y="221">nn_scraper.py, usud_scraper.py</text>
+  <text class="bl" x="246" y="240">pretraga, metapodaci, puni tekst,</text>
+  <text class="bl" x="246" y="254">PDF; samo rute koje robots.txt</text>
+  <text class="bl" x="246" y="264">dopušta</text>
+
+  <rect class="wrnb" x="234" y="282" width="210" height="104" rx="6"/>
+  <text class="wrnt" x="246" y="303">crawler.py, lov.py, zk.py</text>
+  <text class="wrnl" x="246" y="320">robots.txt portala: Disallow: /</text>
+  <text class="wrnl" x="246" y="336">NISU u repozitoriju i ne</text>
+  <text class="wrnl" x="246" y="350">pokreću se bez pisanog</text>
+  <text class="wrnl" x="246" y="364">dopuštenja izvora. Tvrda</text>
+  <text class="wrnl" x="246" y="378">zapreka vraća izlazni kod 3.</text>
+
+  <!-- ================= 3. POHRANA ================= -->
+  <text class="hdr" x="478" y="92">3. POHRANA</text>
+
+  <rect class="box" x="478" y="106" width="206" height="280" rx="6"/>
+  <text class="bt" x="490" y="126">store.py</text>
+  <text class="bl" x="490" y="142">data/corpus.sqlite, nije u gitu</text>
+
+  <rect class="boxi" x="490" y="154" width="182" height="52" rx="5"/>
+  <text class="bt" x="502" y="173">odluke_meta + tekstovi</text>
+  <text class="bl" x="502" y="191">2439 odluka, iz radne kopije</text>
+
+  <rect class="boxi" x="490" y="216" width="182" height="66" rx="5"/>
+  <text class="bt" x="502" y="235">odluke_fts, chunks_fts</text>
+  <text class="bl mono" x="502" y="252">FTS5 unicode61</text>
+  <text class="bl mono" x="502" y="266">remove_diacritics 2</text>
+
+  <rect class="boxi" x="490" y="292" width="182" height="80" rx="5"/>
+  <text class="bt" x="502" y="311">chunks + emb</text>
+  <text class="bl" x="502" y="328">lomljenje po numeriranim</text>
+  <text class="bl" x="502" y="342">točkama obrazloženja</text>
+  <text class="bl" x="502" y="356">40.363 čanka nad 1552 od</text>
+  <text class="bl" x="502" y="368">2439 odluka, 63,6 %</text>
+
+  <!-- ================= 4. DOHVAT PO ZNACENJU ================= -->
+  <text class="hdr" x="718" y="92">4. DOHVAT PO ZNAČENJU</text>
+
+  <rect class="box" x="718" y="106" width="196" height="280" rx="6"/>
+  <text class="bt" x="730" y="126">vektor.py</text>
+  <text class="bl" x="730" y="142">hibrid, ne sama semantika</text>
+
+  <text class="tag" x="730" y="164">USPOREDNE GRANE</text>
+
+  <rect class="boxi" x="730" y="172" width="158" height="54" rx="5"/>
+  <text class="bt" x="740" y="190">BM25</text>
+  <text class="bl" x="740" y="206">doslovno: broj članka,</text>
+  <text class="bl" x="740" y="218">oznaka predmeta</text>
+
+  <rect class="boxi" x="730" y="236" width="158" height="54" rx="5"/>
+  <text class="bt" x="740" y="254">vektorska grana</text>
+  <text class="bl" x="740" y="270">multilingual-e5-small,</text>
+  <text class="bl" x="740" y="282">kosinusna sličnost</text>
+
+  <!-- BM25 zaobilazi vektorsku granu i ulazi u RRF s desne strane -->
+  <path class="arwi" d="M888,199 L900,199 L900,321 L892,321" marker-end="url(#ai)"/>
+  <path class="arwi" d="M809,290 L809,304" marker-end="url(#ai)"/>
+
+  <rect class="accb" x="730" y="306" width="158" height="42" rx="5"/>
+  <text class="acct mono" x="740" y="324">RRF 1/(60+rang)</text>
+  <text class="bl" x="740" y="340">bez zajedničke skale</text>
+
+  <path class="arwi" d="M809,348 L809,358" marker-end="url(#ai)"/>
+
+  <rect class="boxi" x="730" y="358" width="172" height="26" rx="5"/>
+  <text class="bt" x="740" y="376">agregacija na dokument</text>
+
+  <!-- ================= 5. MJERENJE ================= -->
+  <text class="hdr" x="948" y="92">5. MJERENJE UZ OSNOVICU</text>
+
+  <rect class="okb" x="948" y="106" width="248" height="80" rx="6"/>
+  <text class="okt" x="960" y="126">baseline.py</text>
+  <text class="num" x="960" y="143">EuroVoc klasifikacija, mikro F1   0,708</text>
+  <text class="bl" x="960" y="158">osnovica, tri najčešće oznake trivijalno   0,393</text>
+  <text class="bl" x="960" y="172">n=1274, 19 oznaka, podjela 955 / 319</text>
+
+  <rect class="okb" x="948" y="200" width="248" height="80" rx="6"/>
+  <text class="okt" x="960" y="220">analiza_cl55.py</text>
+  <text class="num" x="960" y="237">čl. 55. ZoŠ: 77 stvarnih od 148 pogodaka</text>
+  <text class="bl" x="960" y="252">osnovica, naivna pretraga po broju članka:</text>
+  <text class="bl" x="960" y="266">preciznost 52 %, dakle svaki drugi promašaj</text>
+
+  <rect class="okb" x="948" y="294" width="248" height="92" rx="6"/>
+  <text class="okt" x="960" y="314">zlatni skup, n=17</text>
+  <text class="num" x="960" y="331">hibrid: 16/17 u top 200 odluka</text>
+  <text class="bl" x="960" y="346">osnovica, vlastiti klasifikator na istom skupu:</text>
+  <text class="bl" x="960" y="360">preciznost 0,011, odziv 0,059, prva zlatna</text>
+  <text class="bl" x="960" y="374">odluka tek na mjestu #91 od 2439</text>
+
+  <!-- ================= veze medu stupcima ================= -->
+  <path class="arw" d="M202,222 L228,222" marker-end="url(#a)"/>
+  <path class="arw" d="M446,222 L472,222" marker-end="url(#a)"/>
+  <path class="arw" d="M686,222 L712,222" marker-end="url(#a)"/>
+  <path class="arw" d="M916,222 L942,222" marker-end="url(#a)"/>
+
+  <line class="rule" x1="24" y1="404" x2="1196" y2="404"/>
+  <text class="foot" x="24" y="424">Stanje iz radne kopije, 6.8.2026. Korpus, bulk izvoz i parametri dohvata nisu u repozitoriju. Zlatni skup od 17 odluka je malen: jedna presuda vrijedi 5,9 postotnih bodova odziva.</text>
+</svg>

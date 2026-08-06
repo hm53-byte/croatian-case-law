@@ -81,9 +81,10 @@ def izgradi(izvor: pathlib.Path, izlaz: pathlib.Path, ukupno: int) -> int:
     if not izvor.exists():
         sys.exit(f"Izvorna baza ne postoji: {izvor}")
 
-    # read-only, da se puni korpus ni slucajno ne dira
-    src = sqlite3.connect(f"file:{izvor}?mode=ro", uri=True)
-    src.row_factory = sqlite3.Row
+    # read-only, da se puni korpus ni slucajno ne dira. store.otvori_ro
+    # registrira i `odzipaj`, bez kojeg pogled `odluke` ne moze citati
+    # komprimirani tekst.
+    src = store.otvori_ro(izvor)
 
     print(f"Izvor: {izvor}")
     ids = odaberi(src, ukupno)
