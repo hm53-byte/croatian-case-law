@@ -1026,10 +1026,18 @@ def trazi(con: sqlite3.Connection, upit: str, limit: int = 50,
         return con.execute(
             "SELECT *, substr(tekst,1,300) AS isjecak, 0 AS rang FROM odluke o "
             f"WHERE tekst LIKE ?{uvjet} LIMIT ?", par).fetchall()
-    except sqlite3.DatabaseError as e:
+    except (sqlite3.DatabaseError, sqlite3.InterfaceError) as e:
         # Baza otvorena samo za citanje (otvori_ro) ne moze se nadograditi, pa
         # stara cetverostupcana odluke_fts na snippet() sedmog stupca puca s
         # "column index out of range". Poruka mora reci sto uciniti.
+        #
+        # InterfaceError se hvata izrijekom jer NIJE potklasa DatabaseError
+        # nego mu je sestra u hijerarhiji sqlite3.Error. Koju ce od te dvije
+        # iznimke dici ovisi o verziji SQLite-a: sqlite 3.39 (macOS, Python
+        # 3.9) daje DatabaseError, a noviji u CI-ju (Python 3.11) daje
+        # InterfaceError. Bez ovoga poruka o staroj shemi nikad ne izade na
+        # novijim sustavima, nego korisnik dobije golo "column index out of
+        # range".
         if (_ima_objekt(con, "odluke_fts", "table")
                 and _stupci(con, "odluke_fts") != FTS_STUPCI):
             raise RuntimeError(
