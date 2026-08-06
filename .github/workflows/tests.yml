@@ -19,12 +19,17 @@ jobs:
 
       # Namjerno se NE instalira scrapers/requirements.txt u cijelosti.
       # Taj popis povlaci torch (oko 800 MB) i sentence-transformers, sto je
-      # potrebno samo za vektor.py. Testovi ne smiju trebati ni torch ni mrezu,
-      # pa se instaliraju samo lagane ovisnosti.
+      # potrebno samo za racunanje ugradbi. Testovi ne smiju trebati ni torch
+      # ni mrezu, pa se instaliraju samo lagane ovisnosti.
+      #
+      # numpy je ovdje jer ga vektor.py uvozi na vrhu modula, pa bez njega
+      # test moduli koji uvoze vektor pucaju na ImportError. torch i
+      # sentence-transformers uvode se lijeno, unutar funkcije koja racuna
+      # ugradbe, i testovi je ne dodiruju.
       - name: Instaliraj lagane ovisnosti
         run: |
           python -m pip install --upgrade pip
-          python -m pip install requests beautifulsoup4 lxml
+          python -m pip install requests beautifulsoup4 lxml "numpy<2"
 
       - name: Pokreni testove
         run: python -m unittest discover -s tests -v
