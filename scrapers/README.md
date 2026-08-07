@@ -8,7 +8,7 @@ full-text pretraga bez ijednog mrežnog zahtjeva.
 ## Instalacija (već napravljeno)
 
 ```bash
-cd ~/Desktop/PRESUDE/scrapers
+cd <korijen repozitorija>/scrapers
 python3 -m venv venv
 ./venv/bin/pip install requests beautifulsoup4 lxml
 ```

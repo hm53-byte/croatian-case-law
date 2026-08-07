@@ -230,12 +230,12 @@ brzine s CPU-a. CI namjerno ne instalira torch.
 
 Autor: Hrvoje Matej, hrvoje.matej.l@gmail.com
 
-## Prava korištenja
+## Licenca
 
-Copyright (c) 2026 Hrvoje Matej. Sva prava pridržana.
-
-Kod je objavljen radi uvida i nije licenciran za korištenje. Bez izričitog
-pisanog dopuštenja autora nije dopušteno kopiranje, mijenjanje, distribucija ni
-korištenje u vlastitim projektima, komercijalnim ili nekomercijalnim.
-
-Za dogovor o korištenju: hrvoje.matej.l@gmail.com
+- **Kod** (`scrapers/`, `tests/`): [Apache License 2.0](LICENSE).
+- **Dokumentacija i analiza** (`docs/`, `SUME55/analiza/`, autorski tekst
+  README-a): [CC BY 4.0](docs/LICENSE-DOCS), smije se dijeliti i prerađivati
+  uz navođenje autora.
+- **Tekstovi sudskih odluka** (u `data/uzorak.sqlite` i `SUME55/primjeri/`):
+  službeni tekstovi iz područja sudstva, nisu predmet autorskog prava i ne
+  licenciraju se.

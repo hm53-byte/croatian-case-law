@@ -3,7 +3,7 @@
 Testovi za PRESUDE: iskljucivo offline, bez ijednog mreznog zahtjeva.
 
 Pokretanje:
-    cd /Users/hrvojematej/Desktop/PRESUDE
+    cd <korijen repozitorija>
     scrapers/venv/bin/python -m unittest discover -s tests -v
 
 Sadrzaj:
