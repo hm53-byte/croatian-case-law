@@ -28,10 +28,18 @@ scrapers/test_tipkovnice.command
 scrapers/poslovi.py
 
 # Stvarni pravni predmet, osobni podaci: NIKADA ne objavljivati.
-SPIS_VELI_LOSINJ/
+#
+# Nazivi mapa i datoteka tog predmeta imenuju stvarno mjesto i stranke, pa ne
+# stoje ovdje: ova datoteka je javna i naziv bi se objavio upravo time sto ga
+# zabranjujemo. Pravila s nazivima drze se u .git/info/exclude, koji je lokalan
+# i nikad se ne objavljuje.
+#
+# Raniji pokusaj bio je zamijeniti naziv nizom u uglatim zagradama. To se u
+# obrascu ne cita kao tekst nego kao RAZRED ZNAKOVA, pa je pravilo pogadjalo
+# svaku putanju s bilo kojim od tih slova, dakle gotovo sve. Posljedica nije
+# bila propust podatka nego suprotno: svaka nova datoteka u repozitoriju bila
+# je tiho zanemarena i ne bi usla u upis, bez ijedne poruke.
 spis/
-*losinj*
-*Losinj*
 
 # Sustavno nabrajanje portala. robots.txt portala glasi "Disallow: /", pa se ovi
 # moduli ne pokrecu bez pisanog dopustenja izvora i ne objavljuju se. Razlog nije
