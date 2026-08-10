@@ -213,7 +213,7 @@ dopuštenim rutama; vidi odjeljak o `robots.txt` iznad. Testovi:
 ./venv/bin/python -m unittest discover -s ../tests
 ```
 
-298 testova, prolaze u CI-ju na svakoj promjeni glavne grane. Ne diraju mrežu:
+338 testova, prolaze u CI-ju na svakoj promjeni glavne grane. Ne diraju mrežu:
 svaki radi nad vlastitom bazom, u memoriji ili u privremenoj datoteci.
 
 ## Dokumentacija
