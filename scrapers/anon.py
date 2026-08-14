@@ -19,10 +19,17 @@ nema JSON API-ja — zato se parsira HTML):
 Napomena: tražilica vraća najviše 10.000 pogodaka po upitu (1000 stranica),
 pa se šire teme razbijaju na više užih upita.
 
+ROBOTS. robots.txt portala glasi 'Disallow: /', a sve gornje rute potpadaju
+pod tu zabranu (dopuštene su samo informativne /Home/* stranice). Zato svaki
+mrežni zahtjev prolazi kroz tvrdu zapreku u common.py: bez oznake pisanog
+dopuštenja izvora (PRESUDE_DOPUSTENJE ili --dopustenje) proces završava
+izlaznim kodom 3 prije nego što je zahtjev poslan. Već keširani odgovori
+čitaju se s diska i dalje.
+
 Primjeri:
     python anon.py search "zamjena šumskog zemljišta"
     python anon.py doc 05c6cdd3-1486-4903-b85f-eda703b4e5e0
-    python anon.py harvest "zamjena šuma" --max 200
+    python anon.py --dopustenje "klasa/urbroj" harvest "zamjena šuma" --max 200
 """
 from __future__ import annotations
 
@@ -31,6 +38,7 @@ import re
 import sys
 import urllib.parse
 
+import common
 from common import get, get_bytes, soup, save_md, log, DATA_DIR
 import store
 
@@ -243,6 +251,9 @@ def harvest(upiti: list[str], *, max_po_upitu: int = 100, con=None,
 def main() -> None:
     p = argparse.ArgumentParser(description=__doc__,
                                 formatter_class=argparse.RawDescriptionHelpFormatter)
+    p.add_argument("--dopustenje",
+                   help="oznaka pisanog dopustenja izvora (klasa/urbroj); "
+                        "bez nje se mrezni dohvat s portala odbija (robots.txt)")
     sub = p.add_subparsers(dest="cmd", required=True)
 
     ps = sub.add_parser("search", help="pretraži portal i ispiši pogotke")
@@ -260,6 +271,8 @@ def main() -> None:
     ph.add_argument("--pravomocne", action="store_true")
 
     a = p.parse_args()
+    if a.dopustenje:
+        common.DOPUSTENJE = a.dopustenje.strip()
 
     if a.cmd == "search":
         for upit in a.upit:

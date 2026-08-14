@@ -66,6 +66,10 @@ pravomoćnost, stvarno kazalo, prethodne/naknadne odluke.
 
 ## Uporaba
 
+Naredbe koje diraju portal (`anon.py search/doc/harvest`, `usud_scraper.py`)
+odbijaju se pokrenuti bez oznake pisanog dopuštenja izvora; vidi odjeljak
+"Način uporabe" niže. Primjeri ostaju radi dokumentacije sučelja.
+
 ```bash
 # pretraži i samo ispiši
 ./venv/bin/python anon.py search "zamjena šumskog zemljišta" --max 30
@@ -154,12 +158,20 @@ Disallow: /
 
 Rute `/Document/DisplayList` i `/Document/View` potpadaju pod `Disallow: /`.
 Ciljani upit za nekoliko odluka i sustavno nabrajanje cijele baze nisu ista
-stvar ni po opsegu ni po učinku, ali granica je ista i treba je znati.
+stvar ni po opsegu ni po učinku, ali granica je ista i treba je znati. Isto
+vrijedi i za `sljeme.usud.hr` (Ustavni sud): njegov `robots.txt` glasi
+`Disallow: /` bez ijedne iznimke (provjereno 14.8.2026.).
 
-`crawler.py` zato ima tvrdu zapreku: bez izričitog dopuštenja odbija se pokrenuti
-i vraća izlazni kod 3 prije prvog zahtjeva. Za sustavno preuzimanje treba
-dogovor s Ministarstvom pravosuđa, uprave i digitalne transformacije, koje za
-sustav ANON ima servise za kontroliranu razmjenu podataka.
+Zato tvrda zapreka ne postoji samo u `crawler.py` nego u `common.py`, na
+mjestu kroz koje prolazi svaki mrežni zahtjev: dohvat s `odluke.sudovi.hr` i
+`sljeme.usud.hr` završava izlaznim kodom 3 prije nego što je zahtjev poslan,
+osim ako je navedena oznaka pisanog dopuštenja izvora (`PRESUDE_DOPUSTENJE`
+u okolini ili `--dopustenje` u CLI-ju `anon.py` i `usud_scraper.py`). To
+znači da `anon.py search/harvest` i `usud_scraper.py` **danas ne rade** bez
+tog dopuštenja; već keširani odgovori čitaju se s diska i dalje. Za sustavno
+preuzimanje treba dogovor s Ministarstvom pravosuđa, uprave i digitalne
+transformacije, koje za sustav ANON ima servise za kontroliranu razmjenu
+podataka.
 
 Preporučeni redoslijed: pretraga postojećeg lokalnog korpusa (`lov.py`, `store.py`,
 `vektor.py`) bez ijednog mrežnog zahtjeva, pa tek po potrebi ciljana dopuna.

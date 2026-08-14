@@ -123,10 +123,25 @@ Posljedice, izričito:
    zato što ga `robots.txt` zabranjuje. Preporučeni put je zahtjev Ministarstvu
    za službeni izvoz, a do odgovora rad nad postojećim uzorkom.
 
-Ono što se pokreće (`anon.py`, `zakoni.py`, `nn_scraper.py`, `usud_scraper.py`)
-dira samo rute koje `robots.txt` dopušta, ide jednom dretvom s razmakom po hostu
-iz `common.py`, keširanjem da se isti URL ne traži dvaput i retryjem s
-eksponencijalnim backoffom umjesto ponavljanja u petlji.
+4. **I moduli koji jesu u repozitoriju diraju zabranjene rute, i zato imaju
+   istu zapreku.** `anon.py` radi nad `/Document/DisplayList`, `/Document/View`
+   i `/Document/DownloadPDF`, a sve tri potpadaju pod `Disallow: /`.
+   `usud_scraper.py` radi nad `sljeme.usud.hr`, čiji `robots.txt` glasi
+   `Disallow: /` bez ijedne iznimke (provjereno 14.8.2026.). Za oba modula
+   tvrda zapreka u `common.py` odbija svaki mrežni zahtjev prema tim hostovima
+   izlaznim kodom 3 prije nego što je poslan, osim ako je navedena oznaka
+   pisanog dopuštenja izvora (`PRESUDE_DOPUSTENJE` u okolini ili
+   `--dopustenje` u CLI-ju). Takvo dopuštenje autor nema, pa se ti moduli ovdje
+   ne pokreću; već keširani odgovori na disku čitaju se i dalje, jer čitanje
+   vlastitog keša nije mrežni zahtjev. Korpus u radnoj kopiji preuzet je prije
+   nego što je ova granica bila povučena, i to ovdje stoji kao činjenica, ne
+   kao opravdanje.
+
+Moduli koji dohvaćaju s izvora koji to dopuštaju (`zakoni.py`, `nn_scraper.py`,
+`doktrina.py`) idu jednom dretvom s razmakom po hostu iz `common.py`,
+keširanjem da se isti URL ne traži dvaput i retryjem s eksponencijalnim
+backoffom umjesto ponavljanja u petlji. User-Agent svih modula identificira
+alat i repozitorij (`croatian-case-law/1.0`), ne oponaša preglednik.
 
 ## Podaci i anonimizacija
 
@@ -137,7 +152,8 @@ svedena na inicijale. Alat anonimizaciju ne uklanja, ne zaobilazi i ne dodaje;
 preuzima tekst točno kako je objavljen.
 
 U repozitoriju je **`data/uzorak.sqlite`**: uzorak od 25 odluka, oko 550 kB,
-izgrađen skriptom `scrapers/uzorak.py` iz istog portala. Postoji da pretraga radi
+izgrađen skriptom `scrapers/uzorak.py` iz lokalnog korpusa (bez mreže; sam
+korpus potječe s istog portala). Postoji da pretraga radi
 odmah, bez preuzimanja ijedne odluke. To je **uzorak, ne arhiva.** Puni korpus
 (`data/corpus.sqlite`), bulk izvoz odluka i propisa u `SUME55/` nisu u
 repozitoriju; vidi `.gitignore`. Primjeri izlaza su u `SUME55/primjeri/`.
@@ -206,8 +222,11 @@ python3 -m venv venv
 ./venv/bin/python analiza_cl55.py --izvezi
 ```
 
-Naredbe koje dohvaćaju s portala (`anon.py search`, `anon.py harvest`) rade nad
-dopuštenim rutama; vidi odjeljak o `robots.txt` iznad. Testovi:
+Naredbe koje dohvaćaju s portala (`anon.py search`, `anon.py harvest`,
+`usud_scraper.py`) diraju rute pod `Disallow: /` i zato se **odbijaju
+pokrenuti** bez oznake pisanog dopuštenja izvora; vidi odjeljak o `robots.txt`
+iznad. Sve ostalo (pretraga, indeksiranje, analiza) radi nad lokalnom bazom
+bez mreže. Testovi:
 
 ```bash
 ./venv/bin/python -m unittest discover -s ../tests

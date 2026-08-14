@@ -44,6 +44,12 @@ Narodne novine (zakoni.py) NISU zamjena: u NN se objavljuju samo odluke koje se
 moraju objaviti (ocjena ustavnosti propisa), a ne i odluke o ustavnim tužbama
 (U-III), kojih je većina prakse.
 
+ROBOTS. robots.txt hosta sljeme.usud.hr glasi 'Disallow: /' bez ijedne
+iznimke (provjereno 14.8.2026.). Zato svaki mrežni zahtjev (GET i POST)
+prolazi kroz tvrdu zapreku u common.py: bez oznake pisanog dopuštenja izvora
+(PRESUDE_DOPUSTENJE ili --dopustenje) proces završava izlaznim kodom 3 prije
+prvog zahtjeva. Već keširani odgovori čitaju se s diska i dalje.
+
 Primjeri:
     python usud_scraper.py signature
     python usud_scraper.py godine U-I
@@ -88,6 +94,8 @@ def _post_partial(prefiks: str, submit_id: str, viewid: str) -> str:
     application/x-www-form-urlencoded Domino zna vratiti cijelu stranicu.
     """
     url = VIEW_URL + "?$$ajaxid=" + urllib.parse.quote(prefiks + "divContent", safe="")
+    # Ide mimo common.post (multipart), pa zapreka mora biti i ovdje.
+    common.zapreka_robots(url)
     polja = {
         "$$viewid": viewid,
         "$$xspsubmitid": prefiks + submit_id,
@@ -436,6 +444,9 @@ def usud_trazi(upit: str, limit: int = 20) -> list:
 def main() -> None:
     p = argparse.ArgumentParser(description=__doc__,
                                 formatter_class=argparse.RawDescriptionHelpFormatter)
+    p.add_argument("--dopustenje",
+                   help="oznaka pisanog dopustenja izvora (klasa/urbroj); "
+                        "bez nje se mrezni dohvat s portala odbija (robots.txt)")
     sub = p.add_subparsers(dest="cmd", required=True)
 
     sub.add_parser("signature", help="popis signatura (U-I, U-III, ...)")
@@ -463,6 +474,8 @@ def main() -> None:
     pt.add_argument("--max", type=int, default=20)
 
     a = p.parse_args()
+    if a.dopustenje:
+        common.DOPUSTENJE = a.dopustenje.strip()
 
     if a.cmd == "signature":
         for sig in usud_signature():
